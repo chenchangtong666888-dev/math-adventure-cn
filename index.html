@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#fff8e8">
+  <title>算术小勇士</title>
+  <style>
+    :root{--ink:#24304a;--muted:#74809a;--paper:#fffdf7;--purple:#7655e8;--green:#1aa87a;--coral:#ff786b;--yellow:#ffd75e}
+    *{box-sizing:border-box} body{margin:0;min-height:100vh;background:radial-gradient(ellipse at 12% 8%,#fff0c1 0,transparent 29%),radial-gradient(ellipse at 90% 85%,#d9f7ee 0,transparent 33%),#f5f2ff;color:var(--ink);font-family:ui-rounded,"Arial Rounded MT Bold","Microsoft YaHei",system-ui,sans-serif;display:grid;place-items:center;padding:22px}
+    button{font:inherit;cursor:pointer}.game{width:min(760px,100%);background:var(--paper);border:3px solid white;border-radius:32px;box-shadow:0 22px 60px #4032851c;padding:clamp(20px,5vw,42px);position:relative;overflow:hidden}.game:before{content:"✦";position:absolute;right:28px;top:18px;color:#ffd75e;font-size:35px;transform:rotate(12deg)}
+    header{display:flex;align-items:center;gap:14px;margin-bottom:26px}.mascot{width:62px;height:62px;border-radius:20px;background:#fff0bd;display:grid;place-items:center;font-size:36px;box-shadow:inset 0 -4px #f2db94}.eyebrow{font-size:12px;letter-spacing:2px;color:var(--purple);font-weight:900}.title{margin:2px 0 0;font-size:clamp(24px,5vw,34px);letter-spacing:1px}.stats{margin-left:auto;display:flex;gap:9px}.pill{border-radius:14px;background:#f2efff;padding:9px 12px;text-align:center;min-width:68px}.pill small{display:block;font-size:10px;color:var(--muted);font-weight:700}.pill b{font-size:17px;color:var(--purple)}
+    .progress-row{display:flex;align-items:center;gap:12px;margin:0 0 25px}.progress-label{font-size:13px;font-weight:800;color:var(--muted);white-space:nowrap}.track{height:12px;border-radius:20px;background:#eeebf5;flex:1;overflow:hidden}.fill{height:100%;width:0;background:linear-gradient(90deg,#9b7bff,#6dcaab);border-radius:inherit;transition:width .35s ease}
+    .card{border-radius:25px;background:linear-gradient(145deg,#f5f1ff,#f0fbf7);padding:clamp(22px,5vw,38px);text-align:center;min-height:270px;display:flex;flex-direction:column;align-items:center;justify-content:center}.prompt{font-size:15px;font-weight:800;color:var(--muted);margin:0 0 16px}.question{display:flex;align-items:center;justify-content:center;gap:clamp(10px,3vw,22px);font-weight:1000;font-size:clamp(44px,12vw,78px);letter-spacing:1px}.num{color:#35415e}.operator{color:var(--coral)}.equals{color:#aab2c3}.answer-slot{min-width:78px;min-height:82px;color:var(--purple);border-bottom:5px dashed #a994ff;line-height:1.15}.answer-slot.empty{color:#c9c3db}.feedback{height:28px;margin:15px 0 0;font-weight:900;color:var(--green)}.feedback.wrong{color:#e66e62}
+    .choices{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:22px 0 0}.choice{border:0;border-radius:18px;padding:15px 10px;background:white;box-shadow:0 5px 0 #e8e3f2;color:var(--ink);font-size:clamp(23px,6vw,31px);font-weight:1000;transition:transform .12s,box-shadow .12s}.choice:hover{transform:translateY(-3px);box-shadow:0 8px 0 #e8e3f2}.choice:active{transform:translateY(2px);box-shadow:0 2px 0 #e8e3f2}.choice:focus-visible,.primary:focus-visible,.mode:focus-visible{outline:4px solid #ffd75e;outline-offset:3px}.choice.correct{background:#dff8eb;box-shadow:0 5px 0 #9ddbbf;color:#12805d}.choice.incorrect{background:#fff0ed;box-shadow:0 5px 0 #f2b9b0;color:#c9564b;animation:shake .25s}.choice:disabled{cursor:default}@keyframes shake{25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
+    .controls{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:23px}.modes{display:flex;gap:7px}.mode{border:2px solid #eeeaf5;background:white;color:var(--muted);font-size:13px;font-weight:800;border-radius:12px;padding:9px 12px}.mode.active{border-color:#c9baff;background:#f3efff;color:var(--purple)}.primary{border:0;border-radius:15px;padding:13px 20px;background:var(--purple);color:white;font-weight:900;box-shadow:0 5px 0 #563bbd;transition:transform .12s}.primary:hover{transform:translateY(-2px)}.primary:active{transform:translateY(2px);box-shadow:0 2px 0 #563bbd}.primary:disabled{opacity:.45;cursor:not-allowed;transform:none}
+    .result{display:none;text-align:center;padding:18px 5px 8px}.result.show{display:block}.result-emoji{font-size:74px}.result h2{font-size:32px;margin:8px 0}.result p{color:var(--muted);font-weight:700;line-height:1.7}.result .primary{margin-top:10px}.hide{display:none!important}.hint{font-size:12px;color:#9aa3b4;margin:15px 0 0;text-align:center}
+    @media(max-width:520px){body{padding:12px}.game{border-radius:25px}.mascot{width:50px;height:50px;font-size:29px;border-radius:16px}.stats{gap:5px}.pill{min-width:54px;padding:7px}.choices{gap:9px}.choice{border-radius:15px}.controls{align-items:flex-end}.modes{flex-wrap:wrap}.mode{padding:8px 9px}}
+  </style>
+</head>
+<body>
+  <main class="game" aria-label="算术小勇士游戏">
+    <header>
+      <div class="mascot" aria-hidden="true">🦊</div>
+      <div><div class="eyebrow">MATH ADVENTURE</div><h1 class="title">算术小勇士</h1></div>
+      <div class="stats"><div class="pill"><small>⭐ 得分</small><b id="score">0</b></div><div class="pill"><small>🔥 连对</small><b id="streak">0</b></div></div>
+    </header>
+    <section id="playArea">
+      <div class="progress-row"><span class="progress-label">第 <span id="round">1</span> / 10 题</span><div class="track"><div class="fill" id="progress"></div></div></div>
+      <div class="card">
+        <p class="prompt" id="prompt">小狐狸正在收集星星，来帮帮它吧！</p>
+        <div class="question" aria-live="polite"><span class="num" id="a">3</span><span class="operator" id="op">+</span><span class="num" id="b">4</span><span class="equals">=</span><span class="answer-slot empty" id="answer">?</span></div>
+        <p class="feedback" id="feedback" aria-live="polite">选一个正确答案吧！</p>
+      </div>
+      <div class="choices" id="choices" aria-label="选择答案"></div>
+      <div class="controls">
+        <div class="modes" aria-label="难度选择"><button class="mode active" data-mode="easy">🌱 入门</button><button class="mode" data-mode="medium">🚀 进阶</button></div>
+        <button class="primary" id="next" disabled>下一题 →</button>
+      </div>
+      <p class="hint">答错也没关系，再试一次就好！</p>
+    </section>
+    <section class="result" id="result" aria-live="polite"></section>
+  </main>
+  <script>
+    (()=>{
+      const $=id=>document.getElementById(id);
+      let mode='easy',round=1,score=0,streak=0,answer=0,locked=false;
+      const total=10;
+      function makeQuestion(){
+        locked=false;$('next').disabled=true;$('answer').textContent='?';$('answer').classList.add('empty');$('feedback').textContent='选一个正确答案吧！';$('feedback').className='feedback';
+        let a,b,op;
+        if(mode==='easy'){op=Math.random()<.5?'+':'−';a=Math.floor(Math.random()*10)+1;b=Math.floor(Math.random()*10)+1;if(op==='−'&&b>a)[a,b]=[b,a];}
+        else{op=Math.random()<.5?'+':'−';a=Math.floor(Math.random()*40)+10;b=Math.floor(Math.random()*40)+10;if(op==='−'&&b>a)[a,b]=[b,a];}
+        answer=op==='+'?a+b:a-b;$('a').textContent=a;$('b').textContent=b;$('op').textContent=op;
+        const options=new Set([answer]);while(options.size<3){const offset=Math.floor(Math.random()*9)-4;options.add(Math.max(0,answer+ (offset===0?5:offset)));}
+        const sorted=[...options].sort(()=>Math.random()-.5);$('choices').innerHTML='';
+        sorted.forEach(n=>{const btn=document.createElement('button');btn.className='choice';btn.textContent=n;btn.setAttribute('aria-label',`答案 ${n}`);btn.addEventListener('click',()=>choose(btn,n));$('choices').append(btn);});
+        $('round').textContent=round;$('progress').style.width=`${(round-1)/total*100}%`;
+      }
+      function choose(btn,n){if(locked)return;if(n===answer){locked=true;score+=10+Math.min(streak,5)*2;streak++;$('score').textContent=score;$('streak').textContent=streak;$('answer').textContent=answer;$('answer').classList.remove('empty');btn.classList.add('correct');$('feedback').textContent=['太棒啦！星星收入囊中！','答对啦，你真聪明！','好厉害，继续加油！'][Math.floor(Math.random()*3)];$('next').disabled=false;[...$('choices').children].forEach(x=>x.disabled=true);$('progress').style.width=`${round/total*100}%`;}else{streak=0;$('streak').textContent=streak;btn.classList.add('incorrect');$('feedback').textContent='差一点点，再试试看！';$('feedback').className='feedback wrong';setTimeout(()=>btn.classList.remove('incorrect'),400);}}
+      function finish(){const perfect=round>=total&&score>=100;$('playArea').classList.add('hide');$('result').classList.add('show');$('result').innerHTML=`<div class="result-emoji">${perfect?'🏆':'🎉'}</div><h2>${perfect?'闯关成功！':'练习完成！'}</h2><p>你完成了 <b>${total}</b> 道题，获得 <b>${score}</b> 分！<br>${score>=100?'小狐狸为你骄傲，继续保持！':'每一次练习都让你更厉害！'}</p><button class="primary" id="restart">再玩一轮 ↻</button>`;$('restart').addEventListener('click',start);}
+      function start(){round=1;score=0;streak=0;$('score').textContent=0;$('streak').textContent=0;$('result').classList.remove('show');$('playArea').classList.remove('hide');makeQuestion();}
+      $('next').addEventListener('click',()=>{if(!locked)return;if(round>=total){finish();return;}round++;makeQuestion();});
+      document.querySelectorAll('.mode').forEach(btn=>btn.addEventListener('click',()=>{mode=btn.dataset.mode;document.querySelectorAll('.mode').forEach(b=>b.classList.toggle('active',b===btn));start();}));
+      document.addEventListener('keydown',e=>{if(['1','2','3'].includes(e.key)){const btn=$('choices').children[Number(e.key)-1];if(btn&&!btn.disabled)btn.click();}if(e.key==='Enter'&&!$('next').disabled)$('next').click();});
+      makeQuestion();
+    })();
+  </script>
+</body>
+</html>
